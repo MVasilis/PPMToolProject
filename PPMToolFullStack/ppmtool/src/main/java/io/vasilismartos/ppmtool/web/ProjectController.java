@@ -1,12 +1,16 @@
 package io.vasilismartos.ppmtool.web;
 
 import io.vasilismartos.ppmtool.domain.Project;
+import io.vasilismartos.ppmtool.services.MapValidationErrorService;
 import io.vasilismartos.ppmtool.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -17,11 +21,14 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
+
     @PostMapping("")
     public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
-        if(result.hasErrors()){
-            return new ResponseEntity<String>("Invalid Request", HttpStatus.BAD_REQUEST);
-        }
+
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        if(errorMap != null) return errorMap;
 
         Project createdProject = projectService.saveorUpdate(project);
         return new ResponseEntity<Project>(createdProject, HttpStatus.CREATED);

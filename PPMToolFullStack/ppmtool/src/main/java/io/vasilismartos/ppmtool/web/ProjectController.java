@@ -34,6 +34,7 @@ public class ProjectController {
 
     @GetMapping("/{projectId}")
     public ResponseEntity<?> getProjectById(@PathVariable String projectId){
+        System.out.println(" project Id " + projectId);
         Project project = projectService.findProjectByIndetifier(projectId.toUpperCase());
         return new ResponseEntity<Project>(project, HttpStatus.OK);
     }
